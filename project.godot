@@ -11,9 +11,19 @@ config_version=5
 [application]
 
 config/name="WarMetalElements"
+run/main_scene="res://Scenes/BattleScene.tscn"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [dotnet]
 
 project/assembly_name="WarMetalElements"
+
+[file_customization]
+
+folder_colors={
+"res://Art/": "red",
+"res://Scenes/": "purple",
+"res://Scripts/": "green",
+"res://Scripts/SceneScripts/": "green"
+}
