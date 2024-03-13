@@ -1,6 +1,4 @@
-using Godot;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 
 namespace WME
 {
@@ -49,10 +47,10 @@ namespace WME
 
         public override string ToString()
         {
-            return ToStringVerbose();
+            return ToDebugString();
         }
 
-        public string ToStringVerbose()
+        public string ToDebugString()
         {
             return $"{Name} {AttackValue} {CurrentHealth}";
         }

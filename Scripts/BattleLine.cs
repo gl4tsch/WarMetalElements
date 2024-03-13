@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Godot;
 
 namespace WME
 {
@@ -9,6 +7,8 @@ namespace WME
     {
         List<BaseCard> units = new();
         public int Count => units.Count;
+
+        public event Action<CardSummonedEventArgs> CardSummoned;
         public event Action<(int from, int to)> CardMoved;
 
         public BaseCard this[int idx]
@@ -25,6 +25,7 @@ namespace WME
         public void Summon(BaseCard card)
         {
             units.Add(card);
+            CardSummoned?.Invoke(new(card, units.Count - 1));
         }
 
         public void Transform(int idx, BaseCard to)

@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Godot;
+using System;
 
 namespace WME
 {
@@ -8,7 +6,7 @@ namespace WME
     {
         public void ResolveClashes(Fighter me, Fighter enemy)
         {
-            var maxLineLength = Mathf.Max(me.BattleLine.Count, enemy.BattleLine.Count);
+            var maxLineLength = Math.Max(me.BattleLine.Count, enemy.BattleLine.Count);
 
             for (int i = 0; i < maxLineLength; i++)
             {

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace WME
+namespace WME.Nodes
 {
     public partial class BattleScene : Node
     {

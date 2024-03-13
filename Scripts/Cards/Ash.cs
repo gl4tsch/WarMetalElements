@@ -8,7 +8,7 @@ namespace WME
 
         public override string Description => "On round end transform into Phoenix";
 
-        public override string PortraitPath => null;
+        public override string PortraitPath => "icon.svg";
 
         public override Dictionary<Element, int> Cost => new() {{Element.Fire, 1}};
 

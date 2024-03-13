@@ -1,5 +1,3 @@
-using Godot;
-
 namespace WME
 {
     public abstract class BaseHero : IAttackable
