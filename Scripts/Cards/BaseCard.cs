@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace WME
@@ -8,14 +9,17 @@ namespace WME
         public abstract string Description { get; }
         public abstract string PortraitPath { get; }
         public abstract Dictionary<Element, int> Cost { get; }
-        public abstract int AttackValue { get; }
-        public abstract int HealthValue { get; }
+        public abstract int BaseAttack { get; }
+        public abstract int BaseHealth { get; }
         public int CurrentHealth { get; protected set; }
         public bool IsDead => CurrentHealth <= 0;
 
+        public Action Attacked;
+        public Action<(int oldHp, int newHp)> CurrentHealthChanged;
+
         public BaseCard()
         {
-            CurrentHealth = HealthValue;
+            CurrentHealth = BaseHealth;
         }
 
         public virtual void OnPlay()
@@ -30,19 +34,28 @@ namespace WME
 
         public virtual void Attack(int position, Fighter owner, Fighter enemy)
         {
-            enemy.GetAttackableAt(position).ReceiveAttack(AttackValue);
+            enemy.GetAttackableAt(position).ReceiveAttack(this, BaseAttack);
+            Attacked?.Invoke();
         }
 
         protected void SpreadAttack(int position, Fighter owner, Fighter enemy)
         {
-            enemy.GetAttackableAt(position - 1)?.ReceiveAttack(AttackValue);
-            enemy.GetAttackableAt(position)?.ReceiveAttack(AttackValue);
-            enemy.GetAttackableAt(position + 1)?.ReceiveAttack(AttackValue);
+            enemy.GetAttackableAt(position - 1)?.ReceiveAttack(this, BaseAttack);
+            enemy.GetAttackableAt(position)?.ReceiveAttack(this, BaseAttack);
+            enemy.GetAttackableAt(position + 1)?.ReceiveAttack(this, BaseAttack);
+            Attacked?.Invoke();
         }
 
-        public virtual void ReceiveAttack(int attackValue)
+        public virtual void ReceiveAttack(BaseCard attacker, int attackValue)
         {
-            CurrentHealth -= attackValue;
+            ReceiveDamage(attackValue);
+        }
+
+        public virtual void ReceiveDamage(int damage)
+        {
+            int prevHp = CurrentHealth;
+            CurrentHealth -= damage;
+            CurrentHealthChanged?.Invoke((prevHp, CurrentHealth));
         }
 
         public override string ToString()
@@ -52,7 +65,7 @@ namespace WME
 
         public string ToDebugString()
         {
-            return $"{Name} {AttackValue} {CurrentHealth}";
+            return $"{Name} {BaseAttack} {CurrentHealth}";
         }
     }
 }

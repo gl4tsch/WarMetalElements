@@ -37,6 +37,20 @@ namespace WME.Nodes
             return new Vector2(slot * cardSpacing, 0);
         }
 
+        public List<Tween> GatherAnimations()
+        {
+            List<Tween> cardAnimations = new();
+            foreach (var card in cardInstances)
+            {
+                Queue<Tween> cardAnims = card.GetAnimations();
+                while (cardAnims.Count > 0)
+                {
+                    cardAnimations.Add(cardAnims.Dequeue());
+                }
+            }
+            return cardAnimations;
+        }
+
         public void OnCardSummoned(CardSummonedEventArgs args)
         {
             CardNode cardInstance = cardPrefab.Instantiate<CardNode>();

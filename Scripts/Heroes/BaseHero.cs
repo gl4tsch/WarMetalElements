@@ -12,7 +12,7 @@ namespace WME
             CurrentHealth = HealthValue;
         }
 
-        public virtual void ReceiveAttack(int attackValue)
+        public virtual void ReceiveAttack(BaseCard attacker, int attackValue)
         {
             CurrentHealth -= attackValue;
         }

@@ -1,36 +1,21 @@
-[gd_scene load_steps=3 format=3 uid="uid://kcos3nbvw4nk"]
+[gd_scene load_steps=4 format=3 uid="uid://kcos3nbvw4nk"]
 
 [ext_resource type="Script" path="res://Scripts/NodeScripts/SceneScripts/BattleScene.cs" id="1_7b5vo"]
+[ext_resource type="Script" path="res://Scripts/NodeScripts/BattleLineNode.cs" id="2_mtyk1"]
 [ext_resource type="PackedScene" uid="uid://cu0ine13nvttn" path="res://Prefabs/Card.tscn" id="2_qigo1"]
 
-[node name="BattleScene" type="Node2D"]
+[node name="BattleScene" type="Node2D" node_paths=PackedStringArray("ownBattleLine", "enemyBattleLine")]
+position = Vector2(-2, 0)
 script = ExtResource("1_7b5vo")
+ownBattleLine = NodePath("BattleLine Own")
+enemyBattleLine = NodePath("BattleLine Enemy")
 
-[node name="Card" parent="." instance=ExtResource("2_qigo1")]
-position = Vector2(424, 692)
+[node name="BattleLine Own" type="Node2D" parent="."]
+position = Vector2(200, 700)
+script = ExtResource("2_mtyk1")
+cardPrefab = ExtResource("2_qigo1")
 
-[node name="Card5" parent="." node_paths=PackedStringArray("portrait", "costLabel", "atkLabel", "hpLabel") instance=ExtResource("2_qigo1")]
-position = Vector2(145, 938)
-portrait = NodePath("../Card/Portrait")
-costLabel = NodePath("../Card/Cost")
-atkLabel = NodePath("../Card/Atk")
-hpLabel = NodePath("../Card/Hp")
-
-[node name="Card2" parent="." node_paths=PackedStringArray("portrait") instance=ExtResource("2_qigo1")]
-position = Vector2(420, 392)
-portrait = NodePath("../Card/Portrait")
-
-[node name="Card6" parent="." node_paths=PackedStringArray("portrait") instance=ExtResource("2_qigo1")]
-position = Vector2(147, 146)
-portrait = NodePath("../Card/Portrait")
-
-[node name="Card3" parent="." node_paths=PackedStringArray("portrait", "costLabel", "atkLabel", "hpLabel") instance=ExtResource("2_qigo1")]
-position = Vector2(725, 691)
-portrait = NodePath("../Card/Portrait")
-costLabel = NodePath("../Card/Cost")
-atkLabel = NodePath("../Card/Atk")
-hpLabel = NodePath("../Card/Hp")
-
-[node name="Card4" parent="." node_paths=PackedStringArray("portrait") instance=ExtResource("2_qigo1")]
-position = Vector2(721, 391)
-portrait = NodePath("../Card/Portrait")
+[node name="BattleLine Enemy" type="Node2D" parent="."]
+position = Vector2(200, 319)
+script = ExtResource("2_mtyk1")
+cardPrefab = ExtResource("2_qigo1")

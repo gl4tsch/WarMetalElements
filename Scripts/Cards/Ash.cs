@@ -12,9 +12,9 @@ namespace WME
 
         public override Dictionary<Element, int> Cost => new() {{Element.Fire, 1}};
 
-        public override int AttackValue => 0;
+        public override int BaseAttack => 0;
 
-        public override int HealthValue => 3;
+        public override int BaseHealth => 3;
 
         public override void OnPlay()
         {

@@ -2,6 +2,6 @@ namespace WME
 {
     public interface IAttackable
     {
-        public void ReceiveAttack(int attackValue);
+        public void ReceiveAttack(BaseCard attacker, int attackValue);
     }
 }
