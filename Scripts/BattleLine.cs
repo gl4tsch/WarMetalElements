@@ -9,7 +9,6 @@ namespace WME
         public int Count => units.Count;
 
         public event Action<CardSummonedEventArgs> CardSummoned;
-        public event Action<CardDiedEventArgs> CardDied;
         public event Action<CardMovedEventArgs> CardMoved;
 
         public BaseCard this[int idx]
@@ -47,7 +46,6 @@ namespace WME
                 if (units[i].IsDead)
                 {
                     units[i].OnDeath();
-                    CardDied?.Invoke(new(units[i], i));
                     units[i] = null;
                 }
             }

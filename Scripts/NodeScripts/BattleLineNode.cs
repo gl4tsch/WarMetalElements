@@ -8,17 +8,18 @@ namespace WME.Nodes
         [Export] PackedScene cardPrefab;
 
         BattleLine battleLine;
+        Vector2 forward;
         List<CardNode> cardInstances = new();
 
-        float cardSpacing = 300;
+        float cardSpacing = 220;
         float cardMoveDuration = 0.5f;
 
-        public void Init(BattleLine battleLine)
+        public void Init(BattleLine battleLine, Vector2 forward)
         {
             this.battleLine = battleLine;
+            this.forward = forward;
 
             battleLine.CardSummoned += OnCardSummoned;
-            battleLine.CardDied += OnCardDied;
             battleLine.CardMoved += OnCardMoved;
         }
 
@@ -27,7 +28,6 @@ namespace WME.Nodes
             if (battleLine != null)
             {
                 battleLine.CardSummoned -= OnCardSummoned;
-                battleLine.CardDied -= OnCardDied;
                 battleLine.CardMoved -= OnCardMoved;
             }
         }
@@ -42,6 +42,7 @@ namespace WME.Nodes
             List<Tween> cardAnimations = new();
             foreach (var card in cardInstances)
             {
+                if (card == null) continue;
                 Queue<Tween> cardAnims = card.GetAnimations();
                 while (cardAnims.Count > 0)
                 {
@@ -56,21 +57,20 @@ namespace WME.Nodes
             CardNode cardInstance = cardPrefab.Instantiate<CardNode>();
             AddChild(cardInstance);
             cardInstance.Position = GetSlotPosition(args.Position);
-            cardInstance.Init(args.Card);
+            cardInstance.Init(args.Card, forward);
             cardInstances.Add(cardInstance);
-        }
-
-        public void OnCardDied(CardDiedEventArgs args)
-        {
-            var cardInstance = cardInstances[args.Slot];
-            cardInstance.QueueFree();
         }
 
         public void OnCardMoved(CardMovedEventArgs args)
         {
-            var moveTween = CreateTween();
-            moveTween.TweenProperty(cardInstances[args.FromPosition], "Position", GetSlotPosition(args.ToPosition), cardMoveDuration);
+            cardInstances[args.FromPosition].QueueMoveAnimation(GetSlotPosition(args.ToPosition));
             cardInstances[args.ToPosition] = cardInstances[args.FromPosition];
+            cardInstances[args.FromPosition] = null;
+        }
+
+        public void TrimNullCards()
+        {
+            cardInstances.RemoveAll(c => c == null);
         }
     }
 }

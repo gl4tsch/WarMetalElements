@@ -16,6 +16,6 @@ script = ExtResource("2_mtyk1")
 cardPrefab = ExtResource("2_qigo1")
 
 [node name="BattleLine Enemy" type="Node2D" parent="."]
-position = Vector2(200, 319)
+position = Vector2(200, 400)
 script = ExtResource("2_mtyk1")
 cardPrefab = ExtResource("2_qigo1")

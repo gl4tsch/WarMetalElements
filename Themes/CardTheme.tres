@@ -1,0 +1,7 @@
+[gd_resource type="Theme" format=3 uid="uid://dgv5kgfdm0pl5"]
+
+[resource]
+StatsNumber/base_type = &"Label"
+StatsNumber/colors/font_outline_color = Color(0, 0, 0, 1)
+StatsNumber/constants/outline_size = 2
+StatsNumber/font_sizes/font_size = 22

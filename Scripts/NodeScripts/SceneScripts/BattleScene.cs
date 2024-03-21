@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,38 +12,37 @@ namespace WME.Nodes
 
         Fighter me = new();
         Fighter enemy = new();
-        BattleRoundResolver battleRoundResolver = new();
+
+        bool manualAdvanceStep = false;
 
         public override async void _Ready()
         {
-            me.BattleLine.Summon(new Salamander());
-            me.BattleLine.Summon(new Imp());
-            me.BattleLine.Summon(new Imp());
-            me.BattleLine.Summon(new Salamander());
-            me.BattleLine.Summon(new Imp());
-            me.BattleLine.Summon(new Imp());
-            me.BattleLine.Summon(new Salamander());
-            enemy.BattleLine.Summon(new Phoenix());
-            enemy.BattleLine.Summon(new Phoenix());
-            enemy.BattleLine.Summon(new Phoenix());
-            enemy.BattleLine.Summon(new Phoenix());
-            enemy.BattleLine.Summon(new Salamander());
-            enemy.BattleLine.Summon(new Phoenix());
-            enemy.BattleLine.Summon(new Phoenix());
-            enemy.BattleLine.Summon(new Phoenix());
+            ownBattleLine.Init(me.BattleLine, Vector2.Up);
+            enemyBattleLine.Init(enemy.BattleLine, Vector2.Down);
 
-            GD.Print(me.Hero);
-            GD.Print(me.BattleLine);
-            GD.Print(enemy.BattleLine);
+            me.BattleLine.Summon(new Imp());
+            me.BattleLine.Summon(new Salamander());
+            me.BattleLine.Summon(new Imp());
+            enemy.BattleLine.Summon(new Phoenix());
+            enemy.BattleLine.Summon(new Imp());
+            enemy.BattleLine.Summon(new Imp());
+
+            var summonAnimations = ownBattleLine.GatherAnimations();
+            summonAnimations.AddRange(enemyBattleLine.GatherAnimations());
+            await TweensToTask(summonAnimations);
+
             GD.Print(enemy.Hero);
+            GD.Print(enemy.BattleLine);
+            GD.Print(me.BattleLine);
+            GD.Print(me.Hero);
 
             await BattleRound();
 
             GD.Print();
-            GD.Print(me.Hero);
-            GD.Print(me.BattleLine);
-            GD.Print(enemy.BattleLine);
             GD.Print(enemy.Hero);
+            GD.Print(enemy.BattleLine);
+            GD.Print(me.BattleLine);
+            GD.Print(me.Hero);
         }
 
         async Task BattleRound()
@@ -60,11 +60,30 @@ namespace WME.Nodes
                 var ownAnims = ownBattleLine.GatherAnimations();
                 var enemyAnims = enemyBattleLine.GatherAnimations();
                 
-                await Task.WhenAll(ownAnims.Select(async a => await ToSignal(a, Tween.SignalName.Finished)));
+                await TweensToTask(ownAnims);
+                await TweensToTask(enemyAnims);
 
                 me.BattleLine.TriggerDeaths();
                 enemy.BattleLine.TriggerDeaths();
+
+                var deathAnimations = ownBattleLine.GatherAnimations();
+                deathAnimations.AddRange(enemyBattleLine.GatherAnimations());
+                await TweensToTask(deathAnimations);
             }
+
+            me.BattleLine.CloseRanks();
+            enemy.BattleLine.CloseRanks();
+
+            await TweensToTask(ownBattleLine.GatherAnimations());
+            await TweensToTask(enemyBattleLine.GatherAnimations());
+
+            ownBattleLine.TrimNullCards();
+            enemyBattleLine.TrimNullCards();
+        }
+
+        Task TweensToTask(List<Tween> tweens)
+        {
+            return Task.WhenAll(tweens.Select(async a => await ToSignal(a, Tween.SignalName.Finished)));
         }
     }
 }

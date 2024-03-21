@@ -8,7 +8,7 @@ namespace WME
 
         public override string Description => "Spread attack";
 
-        public override string PortraitPath => "icon.svg";
+        public override string PortraitPath => "FireSalamander.png";
 
         public override Dictionary<Element, int> Cost => new() {{Element.Fire, 2}};
 

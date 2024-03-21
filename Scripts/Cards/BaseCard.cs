@@ -16,6 +16,7 @@ namespace WME
 
         public Action Attacked;
         public Action<(int oldHp, int newHp)> CurrentHealthChanged;
+        public Action Died;
 
         public BaseCard()
         {
@@ -29,7 +30,7 @@ namespace WME
 
         public virtual void OnDeath()
         {
-
+            Died?.Invoke();
         }
 
         public virtual void Attack(int position, Fighter owner, Fighter enemy)

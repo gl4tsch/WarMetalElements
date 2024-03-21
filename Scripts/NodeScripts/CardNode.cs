@@ -7,22 +7,26 @@ namespace WME.Nodes
 {
     public partial class CardNode : Node2D
     {
-        [Export] Sprite2D portrait;
+        [Export] TextureRect portrait;
         [Export] Label costLabel, atkLabel, hpLabel;
         static string portraitFolderPath = "res://Art/CardPortraits/";
 
         BaseCard card;
+        Vector2 forward;
         Queue<Tween> animations = new();
 
-        public void Init(BaseCard card)
+        public void Init(BaseCard card, Vector2 forward)
         {
             this.card = card;
+            this.forward = forward;
             portrait.Texture = GD.Load<Texture2D>(portraitFolderPath + card.PortraitPath);
             costLabel.Text = card.Cost.ToDebugString();
             atkLabel.Text = card.BaseAttack.ToString();
             hpLabel.Text = card.CurrentHealth.ToString();
 
             card.Attacked += QueueAttackAnimation;
+            card.CurrentHealthChanged += OnHealthChanged;
+            card.Died += QueueDeathAnimation;
 
             Scale = Vector2.Zero;
             animations.Enqueue(SummonAnimation());
@@ -33,6 +37,8 @@ namespace WME.Nodes
             if (card != null)
             {
                 card.Attacked -= QueueAttackAnimation;
+                card.CurrentHealthChanged -= OnHealthChanged;
+                card.Died -= QueueDeathAnimation;
             }
         }
 
@@ -53,25 +59,49 @@ namespace WME.Nodes
             return tween;
         }
 
-        public void QueueAttackAnimation()
+        void QueueAttackAnimation()
         {
-            animations.Enqueue(AttackAnimation());
+            animations.Enqueue(AttackAnimation(forward));
         }
 
-        Tween AttackAnimation()
+        Tween AttackAnimation(Vector2 forward)
         {
+            float moveAmount = 40f;
             Tween tween = GetTree().CreateTween();
-            tween.TweenProperty(this, "position", Position - new Vector2(0, 20), 0.2f);
-            tween.TweenProperty(this, "position", Position + new Vector2(0, 40), 0.2f).SetTrans(Tween.TransitionType.Back);
+            tween.TweenProperty(this, "position", Position - forward * (moveAmount / 2f), 0.2f);
+            tween.TweenProperty(this, "position", Position + forward * moveAmount, 0.2f).SetTrans(Tween.TransitionType.Back);
             tween.TweenProperty(this, "position", Position, 0.2f);
             return tween;
         }
 
-        public Tween DeathAnimation()
+        public void QueueMoveAnimation(Vector2 targetPos)
+        {
+            animations.Enqueue(MoveAnimation(targetPos));
+        }
+
+        Tween MoveAnimation(Vector2 targetPos)
+        {
+            Tween tween = GetTree().CreateTween();
+            tween.TweenProperty(this, "position", targetPos, 0.2f);
+            return tween;
+        }
+
+        void OnHealthChanged((int oldHp, int newHp) hpChange)
+        {
+            hpLabel.Text = hpChange.newHp.ToString();
+        }
+
+        void QueueDeathAnimation()
+        {
+            animations.Enqueue(DeathAnimation());
+        }
+
+        Tween DeathAnimation()
         {
             Tween tween = GetTree().CreateTween();
             tween.TweenProperty(this, "scale", Vector2.Zero, 0.5f);
             tween.SetTrans(Tween.TransitionType.Bounce);
+            tween.TweenCallback(Callable.From(() => QueueFree()));
             return tween;
         }
 

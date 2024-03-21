@@ -8,7 +8,7 @@ namespace WME
 
         public override string Description => $"On death transform into Ash";
 
-        public override string PortraitPath => "icon.svg";
+        public override string PortraitPath => "Phoenix.png";
 
         public override Dictionary<Element, int> Cost => new() {{Element.Fire, 3}};
 
@@ -18,6 +18,7 @@ namespace WME
 
         public override void OnDeath()
         {
+            base.OnDeath();
             // summon ash
         }
     }
