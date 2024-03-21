@@ -1,14 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://kcos3nbvw4nk"]
+[gd_scene load_steps=5 format=3 uid="uid://kcos3nbvw4nk"]
 
 [ext_resource type="Script" path="res://Scripts/NodeScripts/SceneScripts/BattleScene.cs" id="1_7b5vo"]
 [ext_resource type="Script" path="res://Scripts/NodeScripts/BattleLineNode.cs" id="2_mtyk1"]
 [ext_resource type="PackedScene" uid="uid://cu0ine13nvttn" path="res://Prefabs/Card.tscn" id="2_qigo1"]
+[ext_resource type="PackedScene" uid="uid://dh83sbhw6st64" path="res://Prefabs/Hero.tscn" id="4_vp306"]
 
-[node name="BattleScene" type="Node2D" node_paths=PackedStringArray("ownBattleLine", "enemyBattleLine")]
+[node name="BattleScene" type="Node2D" node_paths=PackedStringArray("ownBattleLine", "enemyBattleLine", "ownHero", "enemyHero")]
 position = Vector2(-2, 0)
 script = ExtResource("1_7b5vo")
 ownBattleLine = NodePath("BattleLine Own")
 enemyBattleLine = NodePath("BattleLine Enemy")
+ownHero = NodePath("Hero Own")
+enemyHero = NodePath("Hero Enemy")
 
 [node name="BattleLine Own" type="Node2D" parent="."]
 position = Vector2(200, 700)
@@ -19,3 +22,9 @@ cardPrefab = ExtResource("2_qigo1")
 position = Vector2(200, 400)
 script = ExtResource("2_mtyk1")
 cardPrefab = ExtResource("2_qigo1")
+
+[node name="Hero Own" parent="." instance=ExtResource("4_vp306")]
+position = Vector2(113, 967)
+
+[node name="Hero Enemy" parent="." instance=ExtResource("4_vp306")]
+position = Vector2(112, 109)

@@ -98,6 +98,29 @@ namespace WME.Nodes
             }
         }
 
+        Tween ReduceHealthAnimation(int toHp)
+        {
+            Tween tween = GetTree().CreateTween();
+            tween.TweenInterval(0.4f);
+            tween.TweenCallback(Callable.From(() => hpLabel.AddThemeColorOverride("font_color", new Color(1, 0, 0))));
+            tween.TweenInterval(0.2f);
+            tween.TweenCallback(Callable.From(() => hpLabel.Text = toHp.ToString()));
+            tween.TweenInterval(0.2f);
+            tween.TweenCallback(Callable.From(() => hpLabel.RemoveThemeColorOverride("font_color")));
+            return tween;
+        }
+
+        Tween IncreaseHealthAnimation(int toHp)
+        {
+            Tween tween = GetTree().CreateTween();
+            tween.TweenCallback(Callable.From(() => hpLabel.AddThemeColorOverride("font_color", new Color(0, 1, 0))));
+            tween.TweenInterval(0.2f);
+            tween.TweenCallback(Callable.From(() => hpLabel.Text = toHp.ToString()));
+            tween.TweenInterval(0.2f);
+            tween.TweenCallback(Callable.From(() => hpLabel.RemoveThemeColorOverride("font_color")));
+            return tween;
+        }
+
         void QueueDeathAnimation()
         {
             animations.Enqueue(DeathAnimation());
@@ -109,29 +132,6 @@ namespace WME.Nodes
             tween.TweenProperty(this, "scale", Vector2.Zero, 0.5f);
             tween.SetTrans(Tween.TransitionType.Bounce);
             tween.TweenCallback(Callable.From(() => QueueFree()));
-            return tween;
-        }
-
-        public Tween ReduceHealthAnimation(int toHp)
-        {
-            Tween tween = GetTree().CreateTween();
-            tween.TweenInterval(0.2f);
-            tween.TweenCallback(Callable.From(() => hpLabel.AddThemeColorOverride("font_color", new Color(1,0,0))));
-            tween.TweenInterval(0.2f);
-            tween.TweenCallback(Callable.From(() => hpLabel.Text = toHp.ToString()));
-            tween.TweenInterval(0.2f);
-            tween.TweenCallback(Callable.From(() => hpLabel.RemoveThemeColorOverride("font_color")));
-            return tween;
-        }
-
-        public Tween IncreaseHealthAnimation(int toHp)
-        {
-            Tween tween = GetTree().CreateTween();
-            tween.TweenCallback(Callable.From(() => hpLabel.AddThemeColorOverride("font_color", new Color(0, 1, 0))));
-            tween.TweenInterval(0.2f);
-            tween.TweenCallback(Callable.From(() => hpLabel.Text = toHp.ToString()));
-            tween.TweenInterval(0.2f);
-            tween.TweenCallback(Callable.From(() => hpLabel.RemoveThemeColorOverride("font_color")));
             return tween;
         }
     }

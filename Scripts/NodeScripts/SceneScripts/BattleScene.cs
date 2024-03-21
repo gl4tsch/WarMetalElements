@@ -9,6 +9,7 @@ namespace WME.Nodes
     public partial class BattleScene : Node
     {
         [Export] BattleLineNode ownBattleLine, enemyBattleLine;
+        [Export] HeroNode ownHero, enemyHero;
 
         Fighter me = new();
         Fighter enemy = new();
@@ -19,6 +20,8 @@ namespace WME.Nodes
         {
             ownBattleLine.Init(me.BattleLine, Vector2.Up);
             enemyBattleLine.Init(enemy.BattleLine, Vector2.Down);
+            ownHero.Init(me.Hero);
+            enemyHero.Init(enemy.Hero);
 
             me.BattleLine.Summon(new Imp());
             me.BattleLine.Summon(new Salamander());
@@ -54,13 +57,18 @@ namespace WME.Nodes
                 BaseCard ownCard = me.BattleLine.GetCardAt(i);
                 BaseCard enemyCard = enemy.BattleLine.GetCardAt(i);
 
+                await Task.Delay(200);
+
                 ownCard?.Attack(i, me, enemy);
                 enemyCard?.Attack(i, enemy, me);
 
                 var attackAnimations = ownBattleLine.GatherAnimations();
                 attackAnimations.AddRange(enemyBattleLine.GatherAnimations());
+                attackAnimations.AddRange(ownHero.GetAnimations());
+                attackAnimations.AddRange(enemyHero.GetAnimations());
 
                 await TweensToTask(attackAnimations);
+                await Task.Delay(200);
 
                 me.BattleLine.TriggerDeaths();
                 enemy.BattleLine.TriggerDeaths();

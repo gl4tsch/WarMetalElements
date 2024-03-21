@@ -1,14 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://cu0ine13nvttn"]
+[gd_scene load_steps=4 format=3 uid="uid://dh83sbhw6st64"]
 
-[ext_resource type="Script" path="res://Scripts/NodeScripts/CardNode.cs" id="1_vph63"]
-[ext_resource type="Theme" uid="uid://dgv5kgfdm0pl5" path="res://Themes/CardTheme.tres" id="2_dvfpy"]
-[ext_resource type="Texture2D" uid="uid://d3tokxi7claaf" path="res://Art/CardPortraits/icon.svg" id="2_qvqmj"]
+[ext_resource type="Script" path="res://Scripts/NodeScripts/HeroNode.cs" id="1_g2ji1"]
+[ext_resource type="Theme" uid="uid://dgv5kgfdm0pl5" path="res://Themes/CardTheme.tres" id="2_gai3m"]
+[ext_resource type="Texture2D" uid="uid://d3tokxi7claaf" path="res://Art/CardPortraits/icon.svg" id="3_pfslf"]
 
-[node name="Card" type="Node2D" node_paths=PackedStringArray("portrait", "costLabel", "atkLabel", "hpLabel")]
-script = ExtResource("1_vph63")
+[node name="Hero" type="Node2D" node_paths=PackedStringArray("portrait", "hpLabel")]
+script = ExtResource("1_g2ji1")
 portrait = NodePath("MarginContainer/MarginContainer/Portrait")
-costLabel = NodePath("MarginContainer/MarginContainer2/Cost")
-atkLabel = NodePath("MarginContainer/MarginContainer2/Atk")
 hpLabel = NodePath("MarginContainer/MarginContainer2/Hp")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
@@ -23,11 +21,11 @@ offset_right = 100.0
 offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("2_dvfpy")
+theme = ExtResource("2_gai3m")
 
 [node name="CardBorder" type="TextureRect" parent="MarginContainer"]
 layout_mode = 2
-texture = ExtResource("2_qvqmj")
+texture = ExtResource("3_pfslf")
 expand_mode = 1
 stretch_mode = 5
 
@@ -40,7 +38,7 @@ theme_override_constants/margin_bottom = 10
 
 [node name="Portrait" type="TextureRect" parent="MarginContainer/MarginContainer"]
 layout_mode = 2
-texture = ExtResource("2_qvqmj")
+texture = ExtResource("3_pfslf")
 expand_mode = 1
 stretch_mode = 5
 
@@ -52,6 +50,7 @@ theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
 [node name="Cost" type="Label" parent="MarginContainer/MarginContainer2"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 0
@@ -60,6 +59,7 @@ text = "1F"
 horizontal_alignment = 2
 
 [node name="Atk" type="Label" parent="MarginContainer/MarginContainer2"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
