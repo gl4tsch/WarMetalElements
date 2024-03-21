@@ -88,7 +88,14 @@ namespace WME.Nodes
 
         void OnHealthChanged((int oldHp, int newHp) hpChange)
         {
-            hpLabel.Text = hpChange.newHp.ToString();
+            if (hpChange.oldHp > hpChange.newHp)
+            {
+                animations.Enqueue(ReduceHealthAnimation(hpChange.newHp));
+            }
+            else
+            {
+                animations.Enqueue(IncreaseHealthAnimation(hpChange.newHp));
+            }
         }
 
         void QueueDeathAnimation()
@@ -108,6 +115,7 @@ namespace WME.Nodes
         public Tween ReduceHealthAnimation(int toHp)
         {
             Tween tween = GetTree().CreateTween();
+            tween.TweenInterval(0.2f);
             tween.TweenCallback(Callable.From(() => hpLabel.AddThemeColorOverride("font_color", new Color(1,0,0))));
             tween.TweenInterval(0.2f);
             tween.TweenCallback(Callable.From(() => hpLabel.Text = toHp.ToString()));

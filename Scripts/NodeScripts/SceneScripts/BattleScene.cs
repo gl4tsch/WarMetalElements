@@ -57,25 +57,27 @@ namespace WME.Nodes
                 ownCard?.Attack(i, me, enemy);
                 enemyCard?.Attack(i, enemy, me);
 
-                var ownAnims = ownBattleLine.GatherAnimations();
-                var enemyAnims = enemyBattleLine.GatherAnimations();
-                
-                await TweensToTask(ownAnims);
-                await TweensToTask(enemyAnims);
+                var attackAnimations = ownBattleLine.GatherAnimations();
+                attackAnimations.AddRange(enemyBattleLine.GatherAnimations());
+
+                await TweensToTask(attackAnimations);
 
                 me.BattleLine.TriggerDeaths();
                 enemy.BattleLine.TriggerDeaths();
 
                 var deathAnimations = ownBattleLine.GatherAnimations();
                 deathAnimations.AddRange(enemyBattleLine.GatherAnimations());
+                
                 await TweensToTask(deathAnimations);
             }
 
             me.BattleLine.CloseRanks();
             enemy.BattleLine.CloseRanks();
 
-            await TweensToTask(ownBattleLine.GatherAnimations());
-            await TweensToTask(enemyBattleLine.GatherAnimations());
+            var moveAnimations = ownBattleLine.GatherAnimations();
+            moveAnimations.AddRange(enemyBattleLine.GatherAnimations());
+
+            await TweensToTask(moveAnimations);
 
             ownBattleLine.TrimNullCards();
             enemyBattleLine.TrimNullCards();
