@@ -26,6 +26,7 @@ namespace WME.Nodes
             me.BattleLine.Summon(new Imp());
             me.BattleLine.Summon(new Salamander());
             me.BattleLine.Summon(new Imp());
+            me.BattleLine.Summon(new Ash());
             enemy.BattleLine.Summon(new Phoenix());
             enemy.BattleLine.Summon(new Imp());
             enemy.BattleLine.Summon(new Imp());
@@ -34,18 +35,11 @@ namespace WME.Nodes
             summonAnimations.AddRange(enemyBattleLine.GatherAnimations());
             await TweensToTask(summonAnimations);
 
-            GD.Print(enemy.Hero);
-            GD.Print(enemy.BattleLine);
-            GD.Print(me.BattleLine);
-            GD.Print(me.Hero);
+            DebugPrintBoardState();
 
             await BattleRound();
 
-            GD.Print();
-            GD.Print(enemy.Hero);
-            GD.Print(enemy.BattleLine);
-            GD.Print(me.BattleLine);
-            GD.Print(me.Hero);
+            DebugPrintBoardState();
         }
 
         async Task BattleRound()
@@ -70,14 +64,21 @@ namespace WME.Nodes
                 await TweensToTask(attackAnimations);
                 await Task.Delay(200);
 
-                me.BattleLine.TriggerDeaths();
-                enemy.BattleLine.TriggerDeaths();
+                me.BattleLine.TriggerDeaths(me, enemy);
+                enemy.BattleLine.TriggerDeaths(enemy, me);
 
                 var deathAnimations = ownBattleLine.GatherAnimations();
                 deathAnimations.AddRange(enemyBattleLine.GatherAnimations());
                 
                 await TweensToTask(deathAnimations);
             }
+
+            RoundEnd();
+
+            var roundEndAnimations = ownBattleLine.GatherAnimations();
+            roundEndAnimations.AddRange(enemyBattleLine.GatherAnimations());
+            
+            await TweensToTask(roundEndAnimations);
 
             me.BattleLine.CloseRanks();
             enemy.BattleLine.CloseRanks();
@@ -91,9 +92,29 @@ namespace WME.Nodes
             enemyBattleLine.TrimNullCards();
         }
 
+        void RoundEnd()
+        {
+            for (int i = 0; i < me.BattleLine.Count; i++)
+            {
+                me.BattleLine[i]?.OnRoundEnd(i, me, enemy);
+            }
+            for (int i = 0; i < enemy.BattleLine.Count; i++)
+            {
+                enemy.BattleLine[i]?.OnRoundEnd(i, enemy, me);
+            }
+        }
+
         Task TweensToTask(List<Tween> tweens)
         {
             return Task.WhenAll(tweens.Select(async a => await ToSignal(a, Tween.SignalName.Finished)));
+        }
+
+        public void DebugPrintBoardState()
+        {
+            GD.Print(enemy.Hero);
+            GD.Print(enemy.BattleLine);
+            GD.Print(me.BattleLine);
+            GD.Print(me.Hero);
         }
     }
 }

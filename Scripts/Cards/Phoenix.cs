@@ -16,10 +16,12 @@ namespace WME
 
         public override int BaseHealth => 2;
 
-        public override void OnDeath()
+        public override void OnDeath(int slot, Fighter owner, Fighter enemy)
         {
-            base.OnDeath();
+            base.OnDeath(slot, owner, enemy);
+
             // summon ash
+            owner.BattleLine.Transform(slot, new Ash());
         }
     }
 }

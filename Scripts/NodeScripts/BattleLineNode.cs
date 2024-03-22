@@ -58,7 +58,14 @@ namespace WME.Nodes
             AddChild(cardInstance);
             cardInstance.Position = GetSlotPosition(args.Position);
             cardInstance.Init(args.Card, forward);
-            cardInstances.Add(cardInstance);
+            if (cardInstances.Count > args.Position)
+            {
+                cardInstances[args.Position] = cardInstance;
+            }
+            else
+            {
+                cardInstances.Add(cardInstance);
+            }
         }
 
         public void OnCardMoved(CardMovedEventArgs args)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WME
 {
-    public class Reaction
+    public abstract class Reaction
     {
         public enum ReactionTrigger
         {
@@ -14,7 +14,7 @@ namespace WME
             ReceiveDamage = 4
         }
 
-        public virtual void Execute(List<BaseCard> affectedCards)
+        public virtual void Execute(Fighter me, Fighter enemy)
         {
 
         }

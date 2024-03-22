@@ -16,9 +16,9 @@ namespace WME
 
         public override int BaseHealth => 3;
 
-        public override void OnPlay()
+        public override void OnRoundEnd(int slot, Fighter owner, Fighter enemy)
         {
-            // subscribe to round end event somewhere?
+            owner.BattleLine.Transform(slot, new Phoenix());
         }
     }
 }

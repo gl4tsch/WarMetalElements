@@ -14,6 +14,7 @@ namespace WME
         public int CurrentHealth { get; protected set; }
         public bool IsDead => CurrentHealth <= 0;
 
+        // Animation Trigger Events
         public Action Attacked;
         public Action<(int oldHp, int newHp)> CurrentHealthChanged;
         public Action Died;
@@ -23,27 +24,32 @@ namespace WME
             CurrentHealth = BaseHealth;
         }
 
-        public virtual void OnPlay()
+        public virtual void OnPlay(int slot, Fighter owner, Fighter enemy)
         {
 
         }
 
-        public virtual void OnDeath()
+        public virtual void OnDeath(int slot, Fighter owner, Fighter enemy)
         {
             Died?.Invoke();
         }
 
-        public virtual void Attack(int position, Fighter owner, Fighter enemy)
+        public virtual void OnRoundEnd(int slot, Fighter owner, Fighter enemy)
         {
-            enemy.GetAttackableAt(position).ReceiveAttack(this, BaseAttack);
+
+        }
+
+        public virtual void Attack(int slot, Fighter owner, Fighter enemy)
+        {
+            enemy.GetAttackableAt(slot).ReceiveAttack(this, BaseAttack);
             Attacked?.Invoke();
         }
 
-        protected void SpreadAttack(int position, Fighter owner, Fighter enemy)
+        protected void SpreadAttack(int slot, Fighter owner, Fighter enemy)
         {
-            enemy.GetAttackableAt(position - 1)?.ReceiveAttack(this, BaseAttack);
-            enemy.GetAttackableAt(position)?.ReceiveAttack(this, BaseAttack);
-            enemy.GetAttackableAt(position + 1)?.ReceiveAttack(this, BaseAttack);
+            enemy.GetAttackableAt(slot - 1)?.ReceiveAttack(this, BaseAttack);
+            enemy.GetAttackableAt(slot)?.ReceiveAttack(this, BaseAttack);
+            enemy.GetAttackableAt(slot + 1)?.ReceiveAttack(this, BaseAttack);
             Attacked?.Invoke();
         }
 

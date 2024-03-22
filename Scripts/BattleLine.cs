@@ -1,13 +1,15 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace WME
 {
-    public class BattleLine
+    public class BattleLine : IEnumerable<BaseCard>
     {
         List<BaseCard> units = new();
         public int Count => units.Count;
 
+        // Animation Trigger Events
         public event Action<CardSummonedEventArgs> CardSummoned;
         public event Action<CardMovedEventArgs> CardMoved;
 
@@ -31,6 +33,7 @@ namespace WME
         public void Transform(int idx, BaseCard to)
         {
             units[idx] = to;
+            CardSummoned?.Invoke(new(to, idx));
         }
 
         public void Remove(int idx)
@@ -38,14 +41,14 @@ namespace WME
             units[idx] = null;
         }
 
-        public void TriggerDeaths()
+        public void TriggerDeaths(Fighter me, Fighter enemy)
         {
             for (int i = 0; i < units.Count; i++)
             {
                 if (units[i] == null) continue;
                 if (units[i].IsDead)
                 {
-                    units[i].OnDeath();
+                    units[i].OnDeath(i, me, enemy);
                     units[i] = null;
                 }
             }
@@ -88,6 +91,16 @@ namespace WME
         public override string ToString()
         {
             return string.Join(" | ", units);
+        }
+
+        public IEnumerator<BaseCard> GetEnumerator()
+        {
+            return units.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
