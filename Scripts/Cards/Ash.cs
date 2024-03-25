@@ -14,7 +14,7 @@ namespace WME
 
         public override int BaseAttack => 0;
 
-        public override int BaseHealth => 3;
+        public override int BaseHealth => 1;
 
         public override void OnRoundEnd(int slot, Fighter owner, Fighter enemy)
         {
