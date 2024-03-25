@@ -21,7 +21,7 @@ namespace WME
             base.OnDeath(slot, owner, enemy);
 
             // summon ash
-            owner.BattleLine.Transform(slot, new Ash());
+            owner.BattleLine.SummonAt(new Ash(), slot);
         }
     }
 }

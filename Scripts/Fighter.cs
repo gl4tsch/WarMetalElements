@@ -11,5 +11,17 @@ namespace WME
         {
             return (IAttackable)BattleLine[position] ?? Hero;
         }
+
+        public bool Summon(BaseCard card, bool payManaCost = true)
+        {
+            if (payManaCost && !ManaPool.PayCost(card))
+            {
+                return false;
+            }
+
+            BattleLine.Summon(card);
+            card.OnPlay();
+            return true;
+        }
     }
 }

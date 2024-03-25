@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,66 +12,51 @@ namespace WME.Nodes
         [Export] BattleLineNode ownBattleLine, enemyBattleLine;
         [Export] HeroNode ownHero, enemyHero;
 
-        Fighter me = new();
-        Fighter enemy = new();
+        public Battle Battle = new(new(), new());
+        Fighter player => Battle.Player;
+        Fighter enemy => Battle.Enemy;
 
         bool manualAdvanceStep = false;
 
         public override async void _Ready()
         {
-            ownBattleLine.Init(me.BattleLine, Vector2.Up);
+            ownBattleLine.Init(player.BattleLine, Vector2.Up);
             enemyBattleLine.Init(enemy.BattleLine, Vector2.Down);
-            ownHero.Init(me.Hero);
+            ownHero.Init(player.Hero);
             enemyHero.Init(enemy.Hero);
 
-            me.BattleLine.Summon(new Imp());
-            me.BattleLine.Summon(new Salamander());
-            me.BattleLine.Summon(new Imp());
-            me.BattleLine.Summon(new Ash());
-            enemy.BattleLine.Summon(new Phoenix());
-            enemy.BattleLine.Summon(new Imp());
-            enemy.BattleLine.Summon(new Imp());
+            player.Summon(new Imp());
+            player.Summon(new Salamander());
+            player.Summon(new Imp());
+            player.Summon(new Ash());
+            enemy.Summon(new Phoenix());
+            enemy.Summon(new Emberling());
+            enemy.Summon(new Imp());
 
             var summonAnimations = ownBattleLine.GatherAnimations();
             summonAnimations.AddRange(enemyBattleLine.GatherAnimations());
             await TweensToTask(summonAnimations);
 
             DebugPrintBoardState();
-
             await BattleRound();
-
+            DebugPrintBoardState();
+            await BattleRound();
+            DebugPrintBoardState();
+            await BattleRound();
             DebugPrintBoardState();
         }
 
         async Task BattleRound()
         {
-            var maxLineLength = Math.Max(me.BattleLine.Count, enemy.BattleLine.Count);
+            var maxLineLength = Math.Max(player.BattleLine.Count, enemy.BattleLine.Count);
 
             for (int i = 0; i < maxLineLength; i++)
             {
-                BaseCard ownCard = me.BattleLine.GetCardAt(i);
+                BaseCard playerCard = player.BattleLine.GetCardAt(i);
                 BaseCard enemyCard = enemy.BattleLine.GetCardAt(i);
 
                 await Task.Delay(200);
-
-                ownCard?.Attack(i, me, enemy);
-                enemyCard?.Attack(i, enemy, me);
-
-                var attackAnimations = ownBattleLine.GatherAnimations();
-                attackAnimations.AddRange(enemyBattleLine.GatherAnimations());
-                attackAnimations.AddRange(ownHero.GetAnimations());
-                attackAnimations.AddRange(enemyHero.GetAnimations());
-
-                await TweensToTask(attackAnimations);
-                await Task.Delay(200);
-
-                me.BattleLine.TriggerDeaths(me, enemy);
-                enemy.BattleLine.TriggerDeaths(enemy, me);
-
-                var deathAnimations = ownBattleLine.GatherAnimations();
-                deathAnimations.AddRange(enemyBattleLine.GatherAnimations());
-                
-                await TweensToTask(deathAnimations);
+                await CardClash(i, playerCard, enemyCard);
             }
 
             RoundEnd();
@@ -80,7 +66,7 @@ namespace WME.Nodes
             
             await TweensToTask(roundEndAnimations);
 
-            me.BattleLine.CloseRanks();
+            player.BattleLine.CloseRanks();
             enemy.BattleLine.CloseRanks();
 
             var moveAnimations = ownBattleLine.GatherAnimations();
@@ -92,15 +78,52 @@ namespace WME.Nodes
             enemyBattleLine.TrimNullCards();
         }
 
+        async Task CardClash(int slot, BaseCard playerCard, BaseCard enemyCard)
+        {
+            int playerCardAttackCount = 0;
+            int enemyCardAttackCount = 0;
+
+            while (playerCardAttackCount < playerCard?.BaseAttackCount || enemyCardAttackCount < enemyCard?.BaseAttackCount)
+            {
+                if (playerCard?.BaseAttackCount > playerCardAttackCount)
+                {
+                    playerCard?.Attack(slot, player, enemy);
+                    playerCardAttackCount++;
+                }
+
+                if (enemyCard?.BaseAttackCount > enemyCardAttackCount)
+                {
+                    enemyCard?.Attack(slot, enemy, player);
+                    enemyCardAttackCount++;
+                }
+
+                var attackAnimations = ownBattleLine.GatherAnimations();
+                attackAnimations.AddRange(enemyBattleLine.GatherAnimations());
+                attackAnimations.AddRange(ownHero.GetAnimations());
+                attackAnimations.AddRange(enemyHero.GetAnimations());
+
+                await TweensToTask(attackAnimations);
+                await Task.Delay(200);
+
+                player.BattleLine.TriggerDeaths(player, enemy);
+                enemy.BattleLine.TriggerDeaths(enemy, player);
+
+                var deathAnimations = ownBattleLine.GatherAnimations();
+                deathAnimations.AddRange(enemyBattleLine.GatherAnimations());
+
+                await TweensToTask(deathAnimations);
+            }
+        }
+
         void RoundEnd()
         {
-            for (int i = 0; i < me.BattleLine.Count; i++)
+            for (int i = 0; i < player.BattleLine.Count; i++)
             {
-                me.BattleLine[i]?.OnRoundEnd(i, me, enemy);
+                player.BattleLine[i]?.OnRoundEnd(i, player, enemy);
             }
             for (int i = 0; i < enemy.BattleLine.Count; i++)
             {
-                enemy.BattleLine[i]?.OnRoundEnd(i, enemy, me);
+                enemy.BattleLine[i]?.OnRoundEnd(i, enemy, player);
             }
         }
 
@@ -113,8 +136,8 @@ namespace WME.Nodes
         {
             GD.Print(enemy.Hero);
             GD.Print(enemy.BattleLine);
-            GD.Print(me.BattleLine);
-            GD.Print(me.Hero);
+            GD.Print(player.BattleLine);
+            GD.Print(player.Hero);
         }
     }
 }

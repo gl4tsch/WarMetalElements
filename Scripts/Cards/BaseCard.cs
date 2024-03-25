@@ -10,6 +10,7 @@ namespace WME
         public abstract string PortraitPath { get; }
         public abstract Dictionary<Element, int> Cost { get; }
         public abstract int BaseAttack { get; }
+        public virtual int BaseAttackCount => 1;
         public abstract int BaseHealth { get; }
         public int CurrentHealth { get; protected set; }
         public bool IsDead => CurrentHealth <= 0;
@@ -24,7 +25,7 @@ namespace WME
             CurrentHealth = BaseHealth;
         }
 
-        public virtual void OnPlay(int slot, Fighter owner, Fighter enemy)
+        public virtual void OnPlay()
         {
 
         }

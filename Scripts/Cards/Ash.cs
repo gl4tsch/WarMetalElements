@@ -18,7 +18,8 @@ namespace WME
 
         public override void OnRoundEnd(int slot, Fighter owner, Fighter enemy)
         {
-            owner.BattleLine.Transform(slot, new Phoenix());
+            OnDeath(slot, owner, enemy);
+            owner.BattleLine.SummonAt(new Phoenix(), slot);
         }
     }
 }

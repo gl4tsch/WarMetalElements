@@ -30,10 +30,11 @@ namespace WME
             CardSummoned?.Invoke(new(card, units.Count - 1));
         }
 
-        public void Transform(int idx, BaseCard to)
+        public void SummonAt(BaseCard card, int slot)
         {
-            units[idx] = to;
-            CardSummoned?.Invoke(new(to, idx));
+            units.RemoveAt(slot);
+            units.Insert(slot, card);
+            CardSummoned?.Invoke(new(card, slot));
         }
 
         public void Remove(int idx)
@@ -48,8 +49,9 @@ namespace WME
                 if (units[i] == null) continue;
                 if (units[i].IsDead)
                 {
-                    units[i].OnDeath(i, me, enemy);
-                    units[i] = null;
+                    var unit = units[i];
+                    Remove(i);
+                    unit.OnDeath(i, me, enemy);
                 }
             }
         }
