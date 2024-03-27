@@ -25,7 +25,7 @@ namespace WME.Nodes
             ownHero.Init(player.Hero);
             enemyHero.Init(enemy.Hero);
 
-            player.Summon(new Imp());
+            player.Summon(new MagmaSlime());
             player.Summon(new Salamander());
             player.Summon(new Imp());
             player.Summon(new Ash());
